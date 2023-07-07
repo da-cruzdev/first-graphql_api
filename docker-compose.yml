@@ -9,6 +9,8 @@ services:
     ports:
       - '5432:5432'
     environment:
+      POSTGRES_DB: nestjs
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: pass123
 
   # test-db:
