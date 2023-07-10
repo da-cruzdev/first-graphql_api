@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SignupInput } from './dto/signup.input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { Prisma } from '@prisma/client';
+import { SigninInput } from './dto/signin.input';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     const hashedassword = await argon.hash(signupInput.password);
     const user = await this.prisma.user.create({
       data: {
-        name: signupInput.username,
+        username: signupInput.username,
         email: signupInput.email,
         password: hashedassword,
       } as Prisma.UserCreateInput,
@@ -34,20 +35,29 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signin(signinInput: SigninInput) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: signinInput.email },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new ForbiddenException('Accès interdit');
+    }
 
-  update(id: number, updateAuthInput: UpdateAuthInput) {
-    return `This action updates a #${id} auth`;
-  }
+    const password = await argon.verify(user.password, signinInput.password);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (!password) {
+      throw new ForbiddenException('Accès interdit');
+    }
+
+    const { accessToken, refreshToken } = await this.createTokens(
+      user.id,
+      user.email,
+    );
+
+    await this.updateRefreshToken(user.id, refreshToken);
+
+    return { accessToken, refreshToken, user };
   }
 
   async createTokens(userId: number, email: string) {
