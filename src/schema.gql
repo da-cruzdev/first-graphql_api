@@ -8,20 +8,16 @@ type Todo {
 }
 
 type Query {
+  todos: [Todo!]!
   todo(id: Int!): Todo!
 }
 
 type Mutation {
   createTodo(createTodoInput: CreateTodoInput!): Todo!
-  updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
+  updateTodo(updateTodoInput: Float!): Todo!
   removeTodo(id: Int!): Todo!
 }
 
 input CreateTodoInput {
-  title: Float!
-}
-
-input UpdateTodoInput {
-  title: Float
-  id: Int!
+  title: String!
 }

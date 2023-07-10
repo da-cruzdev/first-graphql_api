@@ -12,6 +12,7 @@ import { PrismaService } from './prisma/prisma.service';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // sortSchema: true,
     }),
     TodoModule,
   ],
