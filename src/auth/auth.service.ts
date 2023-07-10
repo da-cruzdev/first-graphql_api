@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SignupInput } from './dto/signup.input';
-import { UpdateAuthInput } from './dto/update-auth.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -58,6 +57,18 @@ export class AuthService {
     await this.updateRefreshToken(user.id, refreshToken);
 
     return { accessToken, refreshToken, user };
+  }
+
+  async logout(userId: number) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        refreshToken: { not: null },
+      },
+      data: { refreshToken: null },
+    });
+
+    return { loggedOut: true };
   }
 
   async createTokens(userId: number, email: string) {

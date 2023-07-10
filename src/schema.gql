@@ -19,6 +19,10 @@ type SignResponse {
   user: User!
 }
 
+type LogoutResponse {
+  loggedOut: Boolean!
+}
+
 type Query {
   todos: [Todo!]!
   todo(id: Int!): Todo!
@@ -30,6 +34,7 @@ type Mutation {
   removeTodo(id: Int!): Todo!
   Signup(signupInput: SignupInput!): SignResponse!
   Signin(signinInput: SigninInput!): SignResponse!
+  Logout(id: Float!): LogoutResponse!
 }
 
 input CreateTodoInput {
