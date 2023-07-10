@@ -26,6 +26,8 @@ type LogoutResponse {
 type Query {
   todos: [Todo!]!
   todo(id: Int!): Todo!
+  users: [User!]!
+  user(email: String!): User!
 }
 
 type Mutation {
@@ -35,6 +37,9 @@ type Mutation {
   Signup(signupInput: SignupInput!): SignResponse!
   Signin(signinInput: SigninInput!): SignResponse!
   Logout(id: Float!): LogoutResponse!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: Float!): User!
+  removeUser(id: Int!): User!
 }
 
 input CreateTodoInput {
@@ -48,6 +53,12 @@ input SignupInput {
 }
 
 input SigninInput {
+  email: String!
+  password: String!
+}
+
+input CreateUserInput {
+  username: String!
   email: String!
   password: String!
 }
