@@ -7,9 +7,12 @@ import { join } from 'path';
 import { TodoModule } from './todo/todo.module';
 import { PrismaService } from './prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -17,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     TodoModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

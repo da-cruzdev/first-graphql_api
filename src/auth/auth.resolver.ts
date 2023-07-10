@@ -1,16 +1,17 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
-import { CreateAuthInput } from './dto/create-auth.input';
+import { SignupInput } from './dto/signup.input';
 import { UpdateAuthInput } from './dto/update-auth.input';
+import { SignResponse } from './dto/sign-response';
 
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => Auth)
-  createAuth(@Args('createAuthInput') createAuthInput: CreateAuthInput) {
-    return this.authService.create(createAuthInput);
+  @Mutation(() => SignResponse)
+  Signup(@Args('signupInput') signupInput: SignupInput) {
+    return this.authService.signup(signupInput);
   }
 
   @Query(() => [Auth], { name: 'auth' })
@@ -24,8 +25,11 @@ export class AuthResolver {
   }
 
   @Mutation(() => Auth)
-  updateAuth(@Args('updateAuthInput') updateAuthInput: UpdateAuthInput) {
-    return this.authService.update(updateAuthInput.id, updateAuthInput);
+  updateAuth(
+    @Args('updateAuthInput') id: number,
+    updateAuthInput: UpdateAuthInput,
+  ) {
+    return this.authService.update(id, updateAuthInput);
   }
 
   @Mutation(() => Auth)
