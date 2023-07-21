@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { UserInputError } from '@nestjs/apollo';
 import * as argon from 'argon2';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(createUserInput: CreateUserInput) {
-    const hashedassword = await argon.hash(createUserInput.password);
-    const user = await this.prisma.user.create({
-      data: {
-        username: createUserInput.username,
-        email: createUserInput.email,
-        password: hashedassword,
-      } as Prisma.UserCreateInput,
-    });
+    try {
+      const hashedassword = await argon.hash(createUserInput.password);
+      const user = await this.prisma.user.create({
+        data: {
+          username: createUserInput.username,
+          email: createUserInput.email,
+          password: hashedassword,
+        } as Prisma.UserCreateInput,
+      });
 
-    return user;
+      return user;
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException(`L'adresse email est déja utilisée`);
+      }
+
+      throw new InternalServerErrorException(
+        "L'adresse email est déja utilisée",
+      );
+    }
   }
 
   async findAllUsers() {

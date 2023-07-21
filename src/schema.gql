@@ -26,6 +26,7 @@ type LogoutResponse {
 type Query {
   todos: [Todo!]!
   todo(id: Int!): Todo!
+  hello: String!
   users: [User!]!
   user(email: String!): User!
 }

@@ -44,7 +44,7 @@ export class TodoService {
     return updateTodo;
   }
 
-  async remove(id: Number) {
+  async remove(id: number) {
     return await this.prisma.todo.delete({
       where: { id: id } as Prisma.TodoWhereUniqueInput,
     });
